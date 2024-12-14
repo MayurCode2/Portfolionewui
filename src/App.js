@@ -466,7 +466,7 @@ function ContactSection() {
               <FiLinkedin size={24} />
             </a>
             <a 
-              href="mailto:mayurpatil2205@gmail.com"
+              href="mailto:mpmayur2251998@gmail.com"
               className="text-[#8892B0] hover:text-[#64FFDA] transition-colors"
             >
               <svg 
