@@ -61,7 +61,8 @@ function App() {
   const navItems = [
     { id: 'about', label: 'ABOUT' },
     { id: 'experience', label: 'EXPERIENCE' },
-    { id: 'projects', label: 'PROJECTS' }
+    { id: 'projects', label: 'PROJECTS' },
+    { id: 'contact', label: 'CONTACT' }
   ];
 
   const socialLinks = [
@@ -187,6 +188,10 @@ function App() {
 
             <section id="projects" className="min-h-screen py-16 md:py-24">
               <ProjectsSection />
+            </section>
+
+            <section id="contact" className="min-h-screen py-16 md:py-24">
+              <ContactSection />
             </section>
           </div>
         </div>
@@ -418,6 +423,75 @@ function ProjectsSection() {
         >
           View Full Project Archive <span className="ml-2">→</span>
         </a>
+      </div>
+    </div>
+  );
+}
+
+function ContactSection() {
+  return (
+    <div className="space-y-8 text-center">
+      <h2 className="text-4xl font-bold text-[#CCD6F6]">Get In Touch</h2>
+      <p className="text-[#8892B0] leading-relaxed max-w-xl mx-auto">
+        I'm currently looking for new opportunities. Whether you have a question or just want to say hi, 
+        I'll try my best to get back to you!
+      </p>
+      
+      <div className="space-y-6">
+        <a 
+          href="mailto:mpmayur2251998@gmail.com"
+          className="inline-block px-8 py-4 border-2 border-[#64FFDA] text-[#64FFDA] rounded-lg
+                   hover:bg-[#64FFDA]/10 transition-colors"
+        >
+          Say Hello
+        </a>
+
+        <div className="pt-12 space-y-4">
+          <p className="text-[#8892B0]">You can also find me on these platforms:</p>
+          <div className="flex justify-center gap-6">
+            <a 
+              href="https://github.com/MayurCode2" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[#8892B0] hover:text-[#64FFDA] transition-colors"
+            >
+              <FiGithub size={24} />
+            </a>
+            <a 
+              href="https://www.linkedin.com/in/mayur-patil2205/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[#8892B0] hover:text-[#64FFDA] transition-colors"
+            >
+              <FiLinkedin size={24} />
+            </a>
+            <a 
+              href="mailto:mayurpatil2205@gmail.com"
+              className="text-[#8892B0] hover:text-[#64FFDA] transition-colors"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              >
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div className="pt-16">
+          <p className="text-sm text-[#8892B0] opacity-60">
+            Built with React & Tailwind CSS
+          </p>
+        </div>
       </div>
     </div>
   );
