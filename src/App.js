@@ -5,10 +5,66 @@ import sketchBoard from './jpg/drawshear.png';
 import qkart from './jpg/qkart.png';
 import qtify from './jpg/Qtify.png';
 
+function SectionHeader({ number, title }) {
+  return (
+    <div className="flex items-center gap-4 mb-8">
+      <span className="text-[#64FFDA] font-mono text-sm">{number}.</span>
+      <h2 className="text-2xl font-bold text-[#CCD6F6]">{title}</h2>
+      <div className="h-[1px] bg-[#233554] flex-grow ml-4"></div>
+    </div>
+  );
+}
+
+function LoadingScreen() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(timer);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 20);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="fixed inset-0 bg-[#0B1221] z-50 flex items-center justify-center">
+      <div className="space-y-6 text-center">
+        <div className="relative">
+          <div className="text-[#64FFDA] text-6xl font-mono animate-pulse">M</div>
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[#8892B0] text-sm font-mono">
+            {progress}%
+          </div>
+        </div>
+        <div className="h-1 w-48 bg-[#172A45] rounded overflow-hidden">
+          <div 
+            className="h-full bg-[#64FFDA] transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [activeSection, setActiveSection] = useState('about');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Handle mouse movement
   useEffect(() => {
@@ -24,19 +80,21 @@ function App() {
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll('section[id]');
-      const scrollPosition = window.scrollY + 100;
+      const scrollPosition = window.scrollY + window.innerHeight / 3;
 
       sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.offsetHeight;
+        const sectionBottom = sectionTop + sectionHeight;
 
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+        if (scrollPosition >= sectionTop && scrollPosition <= sectionBottom) {
           setActiveSection(section.id);
         }
       });
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -44,16 +102,19 @@ function App() {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      const offset = 80; // Adjust this value based on your header height
+      const headerOffset = 100;
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth'
       });
-      setActiveSection(sectionId);
-      setIsMenuOpen(false);
+      
+      setTimeout(() => {
+        setActiveSection(sectionId);
+        setIsMenuOpen(false);
+      }, 100);
     }
   };
 
@@ -109,94 +170,122 @@ function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0B1221] text-[#8892B0] relative overflow-hidden">
-      {/* Background blur effect */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(100, 255, 218, 0.1), transparent 40%)`,
-          zIndex: 1,
-        }}
-      />
-      
-      {/* Content wrapper with higher z-index */}
-      <div className="relative z-10">
-        {/* Left Sidebar - Desktop */}
-        <div className="hidden md:fixed md:block top-0 left-0 w-[400px] h-screen pt-24 px-8 ml-[300px]">
-          <div className="space-y-12">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-[#CCD6F6] mb-2">
-                Mayur Patil
-              </h1>
-              <h2 className="text-lg md:text-xl text-[#8892B0] mb-6">
-                Full Stack Developer
-              </h2>
-              <p className="text-[#8892B0] leading-relaxed">
-                I build accessible, pixel-perfect digital experiences for the web.
-              </p>
+    <>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <div className="min-h-screen bg-[#0B1221] text-[#8892B0] relative overflow-hidden">
+          {/* Background blur effect */}
+          <div
+            className="fixed inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(100, 255, 218, 0.1), transparent 40%)`,
+              zIndex: 1,
+            }}
+          />
+          
+          {/* Content wrapper with higher z-index */}
+          <div className="relative z-10">
+            {/* Mobile Name Display - New Addition */}
+            <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0B1221]/90 backdrop-blur-sm p-4 z-20">
+              <h1 className="text-2xl font-bold text-[#CCD6F6]">Mayur Patil</h1>
+              <h2 className="text-sm text-[#8892B0]">Full Stack Developer</h2>
             </div>
 
-            {/* Navigation */}
-            <nav className="space-y-1">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`block w-full text-left px-4 py-2 text-sm transition-all duration-300 ${
-                    activeSection === item.id 
-                      ? 'text-[#64FFDA] bg-[#172A45]/50 translate-x-2'
-                      : 'text-[#8892B0] hover:text-[#64FFDA] hover:translate-x-2'
-                  }`}
-                >
-                  <span className="relative">
-                    {item.label}
-                    {activeSection === item.id && (
-                      <span className="absolute -left-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#64FFDA]"></span>
-                    )}
-                  </span>
-                </button>
-              ))}
-            </nav>
+            {/* Left Sidebar - Desktop */}
+            <div className="hidden md:fixed md:block top-0 left-0 w-[400px] h-screen pt-24 px-8 ml-[300px]">
+              <div className="space-y-12">
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-bold text-[#CCD6F6] mb-2">
+                    Mayur Patil
+                  </h1>
+                  <h2 className="text-lg md:text-xl text-[#8892B0] mb-6">
+                    Full Stack Developer
+                  </h2>
+                  <p className="text-[#8892B0] leading-relaxed">
+                    I build accessible, pixel-perfect digital experiences for the web.
+                  </p>
+                </div>
 
-            {/* Social Links */}
-            <div className="flex mt-56 gap-5">
-              {socialLinks.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#8892B0] hover:text-[#64FFDA] transition-colors"
+                {/* Navigation */}
+                <nav className="space-y-1">
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id)}
+                      className={`block w-full text-left px-4 py-2 text-sm transition-all duration-300 ${
+                        activeSection === item.id 
+                          ? 'text-[#64FFDA] bg-[#172A45]/50 translate-x-2'
+                          : 'text-[#8892B0] hover:text-[#64FFDA] hover:translate-x-2'
+                      }`}
+                    >
+                      <span className="relative">
+                        {item.label}
+                        {activeSection === item.id && (
+                          <span className="absolute -left-4 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#64FFDA]"></span>
+                        )}
+                      </span>
+                    </button>
+                  ))}
+                </nav>
+
+                {/* Social Links */}
+                <div className="flex mt-56 gap-5">
+                  {socialLinks.map((social, index) => (
+                    <a
+                      key={index}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#8892B0] hover:text-[#64FFDA] transition-colors"
+                    >
+                      {social.icon}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="md:ml-[600px] min-h-screen">
+              <div className="max-w-3xl mx-auto px-4 md:px-8 pt-20 md:pt-24">
+                <section 
+                  id="about" 
+                  className="mb-16 md:mb-24 min-h-[calc(100vh-100px)] py-16 md:py-24"
                 >
-                  {social.icon}
-                </a>
-              ))}
+                  <SectionHeader number="01" title="About Me" />
+                  <AboutSection />
+                </section>
+
+                <section 
+                  id="experience" 
+                  className="mb-16 md:mb-24 min-h-[calc(100vh-100px)] py-16 md:py-24"
+                >
+                  <SectionHeader number="02" title="Experience" />
+                  <ExperienceSection experiences={experiences} />
+                </section>
+
+                <section 
+                  id="projects" 
+                  className="mb-16 md:mb-24 min-h-[calc(100vh-100px)] py-16 md:py-24"
+                >
+                  <SectionHeader number="03" title="Projects" />
+                  <ProjectsSection />
+                </section>
+
+                <section 
+                  id="contact" 
+                  className="mb-16 md:mb-24 min-h-[calc(100vh-100px)] py-16 md:py-24"
+                >
+                  <SectionHeader number="04" title="Contact" />
+                  <ContactSection />
+                </section>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Main Content */}
-        <div className="md:ml-[600px] min-h-screen">
-          <div className="max-w-3xl mx-auto px-4 md:px-8 pt-20 md:pt-24">
-            <section id="about" className="min-h-screen py-16 md:py-24">
-              <AboutSection />
-            </section>
-
-            <section id="experience" className="min-h-screen py-16 md:py-24">
-              <ExperienceSection experiences={experiences} />
-            </section>
-
-            <section id="projects" className="min-h-screen py-16 md:py-24">
-              <ProjectsSection />
-            </section>
-
-            <section id="contact" className="min-h-screen py-16 md:py-24">
-              <ContactSection />
-            </section>
-          </div>
-        </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 
